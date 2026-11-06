@@ -1,0 +1,24 @@
+name: Sync Upstream
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Darroj ratre auto-sync thase
+  workflow_dispatch: # Manual sync button
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Sync with Upstream
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git remote add upstream https://github.com/morluto/rea.git
+          git fetch upstream
+          git merge upstream/main -m "Auto sync from upstream" || git merge upstream/master -m "Auto sync from upstream"
+          git push origin HEAD
